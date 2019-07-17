@@ -1,6 +1,5 @@
 ﻿using Direct.Core;
 using Direct.Core.Models;
-using Direct.Core.ModelsCreator;
 using Direct.livesports.Models;
 using System;
 using System.Linq;
@@ -12,20 +11,10 @@ namespace Direct.Test
     static void Main(string[] args)
     {
       CCSubmitDirect db = new CCSubmitDirect();
-      ModelsCreator.Create(db, "ctm_action", "Action", @"C:\Users\aco228_\Desktop\output");
-      ModelsCreator.Create(db, "ctm_action_history", "ActionHistory", @"C:\Users\aco228_\Desktop\output");
-      ModelsCreator.Create(db, "ctm_country", "Country", @"C:\Users\aco228_\Desktop\output");
-      ModelsCreator.Create(db, "ctm_country_used", "CountryUsed", @"C:\Users\aco228_\Desktop\output");
-      ModelsCreator.Create(db, "ctm_lander", "Lander", @"C:\Users\aco228_\Desktop\output");
-      ModelsCreator.Create(db, "ctm_lead", "Lead", @"C:\Users\aco228_\Desktop\output");
-      ModelsCreator.Create(db, "ctm_lead_history", "LeadHistory", @"C:\Users\aco228_\Desktop\output");
-      ModelsCreator.Create(db, "ctm_prelander", "Prelander", @"C:\Users\aco228_\Desktop\output");
-      ModelsCreator.Create(db, "ctm_service", "Service", @"C:\Users\aco228_\Desktop\output");
-      ModelsCreator.Create(db, "ctm_click", "Click", @"C:\Users\aco228_\Desktop\output");
 
 
       //Test();
-      Console.WriteLine("WTF?");
+      Console.WriteLine(db.LoadString("SELECT guid FROM [].tm_action WHERE actionid=5"));
       Console.ReadKey();
 
       

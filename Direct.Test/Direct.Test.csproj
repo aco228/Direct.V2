@@ -6,11 +6,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Direct.Core\Direct.Core.csproj" />
+    <Folder Include="ModelCreator\" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="ModelCreator\" />
+    <ProjectReference Include="..\Direct\Direct.csproj" />
   </ItemGroup>
 
 </Project>
