@@ -51,13 +51,14 @@ namespace Direct.Core.Code
       this.MainClassLines.Add("");
     }
     
-    protected virtual void GenerateProperty(string type, string name, string defaultProperty, bool isDateTimeUpdate, bool notUpdatable, bool isNullable)
+    protected virtual void GenerateProperty(string type, string name, string defaultProperty, bool isDateTimeUpdate, bool notUpdatable, bool isNullable, bool hasDefaultValue)
     {
       string DateTimeUpdate = isDateTimeUpdate && !notUpdatable ? ", DateTimeUpdate = true" : "";
       string Nullable = isNullable && !notUpdatable ? ", Nullable = true" : "";
       string NotUpdatable = notUpdatable ? ", NotUpdatable = true" : "";
+      string HasDefaultValue = hasDefaultValue ? ", HasDefaultValue=true" : "";
 
-      this.MainClassLines.Add(string.Format("[DColumn(Name = \"{0}\"{1}{2}{3})]", name, DateTimeUpdate, Nullable, NotUpdatable));
+      this.MainClassLines.Add(string.Format("[DColumn(Name = \"{0}\"{1}{2}{3}{4})]", name, DateTimeUpdate, Nullable, NotUpdatable, HasDefaultValue));
 
       this.MainClassLines.Add(string.Format("public {0} {1} {2} = {3};", 
         type, 

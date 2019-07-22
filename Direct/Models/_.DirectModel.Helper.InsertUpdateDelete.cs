@@ -22,12 +22,12 @@ namespace Direct.Core
       model.GetDatabase().TransactionalManager.Add(model.ConstructInsertQuery());
     }
 
-    internal static string ConstructInsertQuery(this DirectModel model, List<string> avaliableVariables = null) // we use this avaliableVariables in Later load insert from TransactionalManager
+    public static string ConstructInsertQuery(this DirectModel model, List<string> avaliableVariables = null) // we use this avaliableVariables in Later load insert from TransactionalManager
     {
       model.OnBeforeInsert();
       string command = string.Format("INSERT INTO {0}.{1}{2} ({3}) VALUES ({4});",
         model.GetDatabase().DatabaseName, model.GetDatabase().DatabaseSchemeString, model.GetTableName(),
-        model.Snapshot.GetPropertyNamesForInsert(), model.Snapshot.GetPropertyValuesForInsert(avaliableVariables));
+        model.Snapshot.GetPropertyNamesForInsert(), model.Snapshot.GetPropertyValuesForInsert(false, avaliableVariables));
       return command;
     }
 

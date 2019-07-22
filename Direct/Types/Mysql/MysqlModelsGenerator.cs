@@ -55,6 +55,7 @@ namespace Direct.Core.Types.Mysql
     {
       bool isDateTimeUpdate = columnDefault.Equals("CURRENT_TIMESTAMP");
       bool acceptNullable = columnAcceptNullable.Equals("YES");
+      bool hasDefaultValue = !string.IsNullOrEmpty(columnDefault);
       string type = ConvertMysqTypeToCsharp(columnType, acceptNullable);
       bool notUpdatable = type.StartsWith("DateTime") && !string.IsNullOrEmpty(columnDefault);
 
@@ -68,7 +69,7 @@ namespace Direct.Core.Types.Mysql
       else if (!string.IsNullOrEmpty(columnDefault) && type.StartsWith("string")) defaultValue = string.Format("\"{0}\"", columnDefault);
       else if (!string.IsNullOrEmpty(columnDefault) && type.StartsWith("bool")) defaultValue = columnDefault.Equals("1") ? "true" : "false";
 
-      this.GenerateProperty(type, columnName, defaultValue, isDateTimeUpdate, notUpdatable, acceptNullable);
+      this.GenerateProperty(type, columnName, defaultValue, isDateTimeUpdate, notUpdatable, acceptNullable, hasDefaultValue);
     }
 
     private string ConvertMysqTypeToCsharp(string type, bool isNullable)

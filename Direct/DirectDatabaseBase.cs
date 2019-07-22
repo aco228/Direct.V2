@@ -1,4 +1,5 @@
-﻿using Direct.Core.Code;
+﻿using Direct.Core.Bulk;
+using Direct.Core.Code;
 using Direct.Core.Helpers;
 using System;
 using System.Collections.Generic;
@@ -16,6 +17,7 @@ namespace Direct.Core
     public string DatabaseScheme { get; protected set; } = string.Empty;
     public string DatabaseSchemeString { get => string.IsNullOrEmpty(this.DatabaseScheme) ? "" : this.DatabaseScheme + "."; }
     public DirectTransactionalManager TransactionalManager { get; protected set; } = null;
+    public bool PreventDispose { get; set; } = false;
 
     protected string ConnectionString { get; private set; } = string.Empty;
     public abstract DirectModelGeneratorBase ModelsCreator { get; }
@@ -42,7 +44,8 @@ namespace Direct.Core
     protected void OnDispose()
     {
       // here we will close DirectConnection
-      this.TransactionalManager.RunAsync();
+      if(!this.PreventDispose)
+        this.TransactionalManager.RunAsync(); 
     }
 
 

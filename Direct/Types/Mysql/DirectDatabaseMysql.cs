@@ -112,6 +112,7 @@ namespace Direct.Core.Mysql
       command = this.OnBeforeCommandOverride(command);
       command = this.ConstructDatabaseNameAndScheme(command);
       DirectExecuteResult result = new DirectExecuteResult();
+      bool hasException = false;
 
       using (var sqlConnection = new MySqlConnection(this.ConnectionString))
       {
@@ -132,6 +133,12 @@ namespace Direct.Core.Mysql
         finally
         {
           sqlConnection.Close();
+        }
+
+        if(hasException)
+        {
+          System.Threading.Thread.Sleep(2500);
+          Execute(command);
         }
       }
 

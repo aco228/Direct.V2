@@ -16,10 +16,11 @@ namespace Direct.Core.Models
     internal DirectModelSnapshot Snapshot { get; set; } = null;
     internal string IdName { get; set; } = string.Empty;
     internal string TableName { get; set; } = string.Empty;
+    internal string BulkVariableName => string.Format("{0}_{1}", this.IdName, this.InternalID);
     internal DirectDatabaseBase Database { get; } = null;
 
-    internal List<DirectModel> ParentLinks { get; } = new List<DirectModel>(); // Links that we will emmit ID change
-    internal List<DirectModel> ChildrenLinks { get; } = new List<DirectModel>(); // Links from which we expect emmit of ID
+    internal List<DirectModel> Dependants { get; } = new List<DirectModel>(); // Links that we will emmit ID change
+    internal List<DirectModel> Dependecies { get; } = new List<DirectModel>(); // Links from which we expect emmit of ID
 
     public long? LongID { get; internal set; } = null;
     public int? ID { get => (int?)LongID; }
@@ -78,12 +79,12 @@ namespace Direct.Core.Models
     }
 
     ///
-    /// LINKS
+    /// LINKS and dependencies
     ///
 
     internal void EmitChange()
     {
-      foreach (var parent in this.ParentLinks)
+      foreach (var parent in this.Dependants)
         parent.OnEmit(this);
     }
 
@@ -91,10 +92,10 @@ namespace Direct.Core.Models
     internal void OnEmit(DirectModel emitter)
       => this.CastProperty(emitter.IdName, emitter.ID.ToString());
 
-    internal void PreformLink(DirectModel parentModel)
+    internal void AddDependant(DirectModel parentModel)
     {
-      if (!this.ParentLinks.Contains(parentModel))
-        this.ParentLinks.Add(parentModel);
+      if (!this.Dependants.Contains(parentModel))
+        this.Dependants.Add(parentModel);
     }
 
     public DirectModel Link(params DirectModel[] elems)
@@ -104,10 +105,18 @@ namespace Direct.Core.Models
         if (elem == null)
           continue;
 
-        elem.PreformLink(this);
-        this.ChildrenLinks.Add(elem);
+        elem.AddDependant(this);
+        this.Dependecies.Add(elem);
       }
       return this;
+    }
+
+    internal string GetBulkInsertQuery(List<string> allVariables)
+    {
+      string query = this.ConstructInsertQuery(allVariables) + Environment.NewLine;
+      if (this.Dependants.Count > 0)
+        query += this.GetDatabase().ConstructVariable(this.BulkVariableName) + string.Format("(SELECT {0});", this.GetDatabase().QueryScopeID) + Environment.NewLine;
+      return query;
     }
 
     ///
@@ -155,7 +164,7 @@ namespace Direct.Core.Models
       {
         // We check if this property belongs to this models children (models that we expect to link to)
         if (!string.IsNullOrEmpty(modelInternalID)
-          && (!modelInternalID.Equals(this.InternalID) && (from d in this.ChildrenLinks where d.InternalID.Equals(modelInternalID) select d).FirstOrDefault() == null))
+          && (!modelInternalID.Equals(this.InternalID) && (from d in this.Dependecies where d.InternalID.Equals(modelInternalID) select d).FirstOrDefault() == null))
         {
           return;
         }

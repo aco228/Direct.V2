@@ -16,6 +16,7 @@ namespace Direct.Core.Code
     public bool UpdateDateTime = true;
     public bool Nullable = false;
     public bool NotUpdatable = false;
+    public bool HasDefaultValue = false;
 
     public DirectModelPropertySignature(PropertyInfo info)
     {
@@ -29,6 +30,7 @@ namespace Direct.Core.Code
         this.UpdateDateTime = attribute.DateTimeUpdate;
         this.Nullable = attribute.Nullable;
         this.NotUpdatable = attribute.NotUpdatable;
+        this.HasDefaultValue = attribute.HasDefaultValue;
       }
 
     }

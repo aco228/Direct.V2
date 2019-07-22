@@ -33,12 +33,17 @@ namespace Direct.Core.Helpers
         || type == typeof(uint?) || type == typeof(ulong?) || type == typeof(short?))
         return value.ToString();
       else if (type == typeof(string) || type == typeof(String) || type == typeof(char))
-        return string.Format("'{0}'", value.ToString());
+        return string.Format("'{0}'", value.ToString().Replace("'", string.Empty));
       else if (type == typeof(DateTime))
       {
         DateTime? dt = value as DateTime?;
         if (dt != null)
-          return db.ConstructDateTimeParam(dt.Value);
+        {
+          if (dt.Value == default(DateTime))
+            return "NULL";
+          else
+            return db.ConstructDateTimeParam(dt.Value); ;
+        }
         else
           return "NULL";
       }

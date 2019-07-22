@@ -92,7 +92,7 @@ namespace Direct.Core.Models
     /// INSERT
     ///
 
-    internal string GetPropertyNamesForInsert()
+    internal string GetPropertyNamesForInsert(bool includeAll = false)
     {
       if (!string.IsNullOrEmpty(this._propertyNamesForInsert))
         return this._propertyNamesForInsert;
@@ -101,23 +101,39 @@ namespace Direct.Core.Models
 
       for (int i = 0; i < this.PropertySignatures.Count; i++)
       {
-        if (this.PropertySignatures[i].NotUpdatable) continue;
+        //if (this.PropertySignatures[i].NotUpdatable) continue;
+
+        string sqlValue = this.GetSqlValue(i, false);
+        if (!includeAll && sqlValue.Equals("NULL") && this.PropertySignatures[i].Nullable)
+          continue;
+
+        if (!includeAll && sqlValue.Equals("NULL") && this.PropertySignatures[i].HasDefaultValue)
+          continue;
+
         this._propertyNamesForInsert += (!string.IsNullOrEmpty(this._propertyNamesForInsert) ? "," : "") + this.PropertySignatures[i].Name;
       }
       return this._propertyNamesForInsert;
     }
 
-    internal string GetPropertyValuesForInsert(List<string> avaliableVariables = null) // we use this avaliableVariables in Later load insert from TransactionalManager
+    internal string GetPropertyValuesForInsert(bool includeAll = false, List<string> avaliableVariables = null) // we use this avaliableVariables in Later load insert from TransactionalManager
     {
       string result = "";
 
       for (int i = 0; i < this.PropertySignatures.Count; i++)
       {
-        if (this.PropertySignatures[i].NotUpdatable) continue;
+        //if (this.PropertySignatures[i].NotUpdatable) continue;
         string value = this.GetSqlValue(i, throwNullableException: true);
 
+        if (!includeAll && value.Equals("NULL") && this.PropertySignatures[i].Nullable)
+          continue;
+
+        if (!includeAll && value.Equals("NULL") && this.PropertySignatures[i].HasDefaultValue)
+          continue;
+
+        #region # link variables for dependecies #
+
         // this is helper for Database.TransactionalManager (for async Load and Insert)
-        if(avaliableVariables != null) // we try to add avaliableVariable
+        if (avaliableVariables != null) // we try to add avaliableVariable
           foreach (var variable in avaliableVariables)
           {
             // We split variable because format is (variableName_modelKey)
@@ -126,7 +142,7 @@ namespace Direct.Core.Models
             string chidrenID = variableSplit[1];
 
             // Then we check if children of this model contains that key
-            if ((from d in this.Model.ChildrenLinks where d.InternalID.Equals(chidrenID) select d).FirstOrDefault() == null)
+            if ((from d in this.Model.Dependecies where d.InternalID.Equals(chidrenID) select d).FirstOrDefault() == null)
               continue;
 
             // if so, we apply that variable
@@ -136,6 +152,8 @@ namespace Direct.Core.Models
               break;
             }
           }
+
+        #endregion
 
         result += (!string.IsNullOrEmpty(result) ? "," : "") + value;
       }

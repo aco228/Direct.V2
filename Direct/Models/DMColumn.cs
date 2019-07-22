@@ -8,6 +8,7 @@ namespace Direct.Core.Models
   {
     public string Name { get; set; } = string.Empty;
     public bool Nullable { get; set; } = false;
+    public bool HasDefaultValue { get; set; } = false;
     public bool DateTimeUpdate { get; set; } = false;
     public bool NotUpdatable { get; set; } = false;
   }
