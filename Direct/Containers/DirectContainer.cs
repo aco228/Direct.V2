@@ -171,8 +171,12 @@ namespace Direct.Core
     }
     public virtual bool? GetBool(string columnName, int depth = 0)
     {
+      string value = this.GetString(columnName, depth);
+      if (value.Equals("0")) return false;
+      else if (value.Equals("1")) return true;
+
       bool result;
-      if (bool.TryParse(this.GetString(columnName, depth), out result))
+      if (bool.TryParse(value, out result))
         return result;
       return null;
     }

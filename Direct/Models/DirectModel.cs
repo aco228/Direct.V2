@@ -22,7 +22,7 @@ namespace Direct.Core.Models
     internal List<DirectModel> Dependants { get; } = new List<DirectModel>(); // Links that we will emmit ID change
     internal List<DirectModel> Dependecies { get; } = new List<DirectModel>(); // Links from which we expect emmit of ID
 
-    public long? LongID { get; internal set; } = null;
+    public long? LongID { get; set; } = null; // TODO: return setter to be internal
     public int? ID { get => (int?)LongID; }
     public DirectDatabaseBase GetDatabase() => this.Database;
 

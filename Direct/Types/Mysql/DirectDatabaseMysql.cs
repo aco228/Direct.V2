@@ -135,6 +135,7 @@ namespace Direct.Core.Mysql
           sqlConnection.Close();
         }
 
+        // TODO: remove this part
         if(hasException)
         {
           System.Threading.Thread.Sleep(2500);

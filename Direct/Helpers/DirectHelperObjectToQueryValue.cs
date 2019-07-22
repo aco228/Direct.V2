@@ -10,6 +10,15 @@ namespace Direct.Core.Helpers
   public static class DirectHelperObjectToQueryValue
   {
 
+    internal static string EscapeString(this string input)
+    {
+      if (input[input.Length - 1] == '\\')
+        input = input.Substring(0, input.Length - 1);
+
+      return System.Security.SecurityElement.Escape(input.ToString()
+        .Replace("'", string.Empty));
+    }
+
     internal static string GetObjectQueryValue(this DirectDatabaseBase db, PropertyInfo obj, DirectModelPropertySignature signature, object parentObject)
     {
       if (obj == null)
@@ -33,7 +42,7 @@ namespace Direct.Core.Helpers
         || type == typeof(uint?) || type == typeof(ulong?) || type == typeof(short?))
         return value.ToString();
       else if (type == typeof(string) || type == typeof(String) || type == typeof(char))
-        return string.Format("'{0}'", value.ToString().Replace("'", string.Empty));
+        return string.Format("'{0}'", value.ToString().EscapeString());
       else if (type == typeof(DateTime))
       {
         DateTime? dt = value as DateTime?;
@@ -66,7 +75,7 @@ namespace Direct.Core.Helpers
         || type == typeof(uint) || type == typeof(ulong) || type == typeof(short))
         return obj.ToString();
       else if (type == typeof(string) || type == typeof(String) || type == typeof(char))
-        return string.Format("'{0}'", obj.ToString());
+        return string.Format("'{0}'", obj.ToString().EscapeString());
       else if (type == typeof(DateTime))
       {
         DateTime? dt = obj as DateTime?;
