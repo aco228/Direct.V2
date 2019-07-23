@@ -79,6 +79,24 @@ namespace Direct.Core.Helpers
         return obj.ToString();
       else if (type == typeof(string) || type == typeof(String) || type == typeof(char))
         return string.Format("'{0}'", obj.ToString().EscapeString());
+      else if (type == typeof(bool))
+        return (bool)obj == true ? "1" : "0";
+      else if (type == typeof(string[]) || type == typeof(List<string>))
+      {
+        string value = "";
+        if (type == typeof(List<string>)) obj = ((List<string>)obj).ToArray(); // convert it first to array so we can easly work with it
+        foreach (string a in (string[])obj)
+          value += (!string.IsNullOrEmpty(value) ? "," : "") + string.Format("'{0}'", a.EscapeString());
+        return value;
+      }
+      else if (type == typeof(int[]) || type == typeof(List<int>))
+      {
+        string value = "";
+        if (type == typeof(List<int>)) obj = ((List<int>)obj).ToArray(); // convert it first to array so we can easly work with it
+        foreach (int a in (int[])obj)
+          value += (!string.IsNullOrEmpty(value) ? "," : "") + a;
+        return value;
+      }
       else if (type == typeof(DateTime))
       {
         DateTime? dt = obj as DateTime?;

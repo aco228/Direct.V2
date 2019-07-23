@@ -13,6 +13,10 @@ namespace Direct.Core
 
     public static DirectQueryLoader<T> Where<T>(this DirectQueryLoader<T> loader, string input) where T : DirectModel
     {
+      if(input.Contains("[id]"))
+        using (var tempValue = (T)Activator.CreateInstance(typeof(T), (DirectDatabaseBase)null))
+          input = input.Replace("[id]", tempValue.IdName);
+
       loader.Where = input;
       return loader;
     }
