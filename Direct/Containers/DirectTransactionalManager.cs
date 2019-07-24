@@ -137,6 +137,9 @@ namespace Direct.Core
           int a = 0;
         }
         Console.WriteLine(string.Format("TransactionalManager is finished {0} tasks after {1}", originalTasks, ms));
+        Console.WriteLine(mainQuery);
+        Console.WriteLine();
+        Console.WriteLine();
       }
       catch(Exception e)
       {

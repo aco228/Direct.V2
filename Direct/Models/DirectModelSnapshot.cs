@@ -11,7 +11,7 @@ namespace Direct.Core.Models
 {
   public class DirectModelSnapshot
   {
-    private static List<string> IgnoredPropertyNames = new List<string>() { "ID", "LongID" };
+    private static List<string> IgnoredPropertyNames = new List<string>() { "ID", "LongID", "OnAfterInsert", "OnAfterUpdate" };
     internal List<DirectModelPropertySignature> PropertySignatures { get; set; } = null;
     internal PropertyInfo[] Properties { get; set; } = null;
     private Dictionary<string, string> SnapshotObjects = null;

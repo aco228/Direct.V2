@@ -57,14 +57,44 @@ namespace Direct.Core.Models
     internal string GetTableName() => this.TableName;
     internal string GetIdNameValue() => this.IdName;
 
+    public int? WaitID(int forSeconds = 30)
+    {
+      if (this.ID.HasValue)
+        return this.ID;
+
+      DateTime started = DateTime.Now;
+      do
+      {
+        if ((DateTime.Now - started).TotalSeconds >= forSeconds)
+          break;
+      }
+      while (this.ID == null);
+
+      return this.ID;
+    }
+
+    public int WaitIDExplicit(int forSeconds = 30)
+    {
+      int? id = this.WaitID(30);
+      if (!id.HasValue)
+        throw new Exception("We did not get any response");
+      return id.Value;
+    }
 
     ///
     /// Overrides
     ///
-    
+
+    internal Action OnAfterInsert  = null;
+    internal Action OnAfterUpdate = null;
+
+    public void SetOnAfterInsert(Action action) => this.OnAfterInsert = action;
+    public void SetOnAfterUpdate(Action action) => this.OnAfterUpdate = action;
+
     public virtual void OnBeforeInsert() { }
     public virtual void OnBeforeUpdate() { }
     public virtual void OnBeforeDelete() { }
+
 
     //
     // SUMMARY: Properties manipulation
@@ -134,7 +164,11 @@ namespace Direct.Core.Models
     public Task InsertAsync(DirectDatabaseBase db = null) => this.GetDatabase(db).InsertAsync<DirectModel>(this);
     public Task<T> InsertAsync<T>(DirectDatabaseBase db = null) where T : DirectModel => this.GetDatabase(db).InsertAsync<T>(this);
 
-    public void InsertLater(DirectDatabaseBase db = null) => this.GetDatabase(db).TransactionalManager.Insert(this);
+    public void InsertLater(DirectDatabaseBase db = null)
+    {
+      this.OnAfterInsert?.Invoke();
+      this.GetDatabase(db).TransactionalManager.Insert(this);
+    }
     public void InsertOrUpdate(DirectDatabaseBase db = null) => this.GetDatabase(db).InsertOrUpdate(this);
     public async Task InsertOrUpdateAsync(DirectDatabaseBase db = null) => await this.GetDatabase(db).InsertOrUpdateAsync(this);
 
@@ -144,7 +178,11 @@ namespace Direct.Core.Models
     /// 
 
     public void Update(DirectDatabaseBase db = null) => this.GetDatabase(db).Update(this);
-    public void UpdateLater() => this.GetDatabase().TransactionalManager.Add(this);
+    public void UpdateLater()
+    {
+      this.OnAfterUpdate?.Invoke();
+      this.GetDatabase().TransactionalManager.Add(this);
+    }
     public async Task UpdateAsync(DirectDatabaseBase db = null) => await this.GetDatabase(db).UpdateAsync(this);
     
     /// 

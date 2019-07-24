@@ -25,6 +25,7 @@ namespace Direct.Core
       DirectExecuteResult result = await db.ExecuteAsync(command);
       if (result.IsSuccessfull && result.LastID.HasValue)
       {
+        model.OnAfterInsert?.Invoke();
         model.LongID = result.LastID;
         model.Snapshot.SetSnapshot();
         return (T)model;
@@ -48,6 +49,7 @@ namespace Direct.Core
         return null;
       else
       {
+        model.OnAfterUpdate?.Invoke();
         model.Snapshot.SetSnapshot();
         return result.NumberOfRowsAffected;
       }

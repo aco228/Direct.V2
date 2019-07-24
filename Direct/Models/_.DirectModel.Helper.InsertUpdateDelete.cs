@@ -8,10 +8,10 @@ namespace Direct.Core
   public static partial class DirectModelHelper
   {
 
-    public static void InsertOrUpdate(this DirectDatabaseBase db, DirectModel model)
+    public static async void InsertOrUpdate(this DirectDatabaseBase db, DirectModel model)
     {
       //if (model.LongID.HasValue)
-      //  Update(db, model);
+      //  await Update(db, model);
       //else
       //  Insert(db, model);
     }
@@ -36,6 +36,7 @@ namespace Direct.Core
       DirectExecuteResult result = db.Execute(model.ConstructInsertQuery());
       if (result.IsSuccessfull && result.LastID.HasValue)
       {
+        model.OnAfterInsert?.Invoke();
         model.LongID = result.LastID;
         model.Snapshot.SetSnapshot();
         return (T)model;
@@ -70,6 +71,7 @@ namespace Direct.Core
         return null;
       else
       {
+        model.OnAfterUpdate?.Invoke();
         model.Snapshot.SetSnapshot();
         return result.NumberOfRowsAffected;
       }
